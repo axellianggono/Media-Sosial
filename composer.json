@@ -1,0 +1,8 @@
+{
+    "name": "kelompok7/media-sosial",
+    "type": "project",
+    "require": {
+        "ramsey/uuid": "^4.9",
+        "phpmailer/phpmailer": "^7.0"
+    }
+}
