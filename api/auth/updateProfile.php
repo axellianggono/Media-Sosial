@@ -91,6 +91,11 @@ function updateProfile($token, $profileImage, $newUsername, $oldPassword, $newPa
 
     // update username if provided
     if (!empty($newUsername)) {
+        $usernameError = validateUsername($newUsername);
+        if ($usernameError !== null) {
+            return ["success" => false, "message" => $usernameError];
+        }
+
         $stmt = $conn->prepare("UPDATE users SET username = ? WHERE user_id = ?");
         $stmt->bind_param("si", $newUsername, $userId);
         if (!$stmt->execute()) {
@@ -100,6 +105,11 @@ function updateProfile($token, $profileImage, $newUsername, $oldPassword, $newPa
 
     // update password if provided
     if (!empty($oldPassword) && !empty($newPassword)) {
+        $passwordError = validatePasswordChange($oldPassword, $newPassword);
+        if ($passwordError !== null) {
+            return ["success" => false, "message" => $passwordError];
+        }
+
         // verify old password
         $stmt = $conn->prepare("SELECT password FROM users WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
