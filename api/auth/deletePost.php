@@ -9,7 +9,7 @@ require __DIR__ . '/../auth/middleware.php';
 function deletePost($postId) {
     global $conn;
 
-    $stmt = $conn->prepare("DELETE FROM posts WHERE post_id = ?");
+    $stmt = $conn->prepare("DELETE FROM post WHERE post_id = ?");
     $stmt->bind_param("i", $postId);
     $stmt->execute();
 

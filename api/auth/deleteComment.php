@@ -9,7 +9,7 @@ require __DIR__ . '/../auth/middleware.php';
 function deleteComment($comment_id) {
     global $conn;
 
-    $stmt = $conn->prepare("DELETE FROM comments WHERE comment_id = ?");
+    $stmt = $conn->prepare("DELETE FROM comment WHERE comment_id = ?");
     $stmt->bind_param("i", $comment_id);
     $stmt->execute();
 

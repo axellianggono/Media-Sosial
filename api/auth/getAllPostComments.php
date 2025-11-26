@@ -9,7 +9,7 @@ require __DIR__ . '/../auth/middleware.php';
 function getAllPostsComments($post_id) {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT comment_id, post_id, user_id, content, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC");
+    $stmt = $conn->prepare("SELECT comment_id, post_id, user_id, content, created_at FROM comment WHERE post_id = ? ORDER BY created_at DESC");
     $stmt->bind_param("i", $post_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -30,7 +30,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
             $token = $matches[1];
 
-            if (!validateToken($token) || !isAdmin($token) && !isSuperAdmin($token)) {
+            if (!validateToken($token)) {
                 http_response_code(401);
                 echo json_encode(["success" => false, "message" => "Unauthorized access."]);
                 exit;

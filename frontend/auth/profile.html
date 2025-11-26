@@ -6,34 +6,116 @@
     <title>Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f8f9fa;
+        color: #212529;
+        min-height: 100vh;
+      }
+      .navbar {
+        background: #ffffff;
+        border-bottom: 1px solid #e9ecef;
+      }
+      .profile-card {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+      .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #f1f3f5;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      }
+      .tab-card {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 16px;
+        padding: 16px;
+        min-height: 260px;
+      }
+      .pill-nav .nav-link {
+        border-radius: 12px;
+        color: #495057;
+        border: 1px solid transparent;
+      }
+      .pill-nav .nav-link.active {
+        background: #e7f1ff;
+        border-color: #cfe2ff;
+        color: #0d6efd;
+      }
+      .content-card {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 14px;
+        background: #ffffff;
+      }
+      .content-card img {
+        max-height: 160px;
+        object-fit: cover;
+        border-radius: 12px;
+        width: 100%;
+      }
+      .content-meta {
+        font-size: 13px;
+        color: #6c757d;
+      }
+      .action-links .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 8px;
+      }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-md">
-            <a class="navbar-brand" href="#">SociaLite</a>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-xl py-2">
+        <a class="navbar-brand fw-bold text-dark" href="../">SociaLite</a>
+        <div class="d-flex align-items-center gap-3 ms-auto">
+          <a href="../" class="btn btn-outline-secondary btn-sm px-3">Home</a>
+          <a href="./edit-profile.html" class="btn btn-primary btn-sm px-3">Edit Profile</a>
         </div>
+      </div>
     </nav>
-    <div class="container">
-        <a href="../" class="float-end">Home</a>
-        <div class="d-flex align-items-center my-5 gap-5">
-            <div>
-                <img src="../../api/storage/images/default.jpg" alt="User's Profile Picture" class="rounded-circle" width="250" height="250" id="user-profile-photo">
+
+    <main class="container-xl py-5">
+      <div class="profile-card">
+        <div class="row align-items-center g-4">
+          <div class="col-md-auto text-center text-md-start">
+            <img src="../../api/storage/images/default.jpg" alt="User's Profile Picture" class="avatar" id="user-profile-photo">
+          </div>
+          <div class="col">
+            <h2 class="fw-bold text-dark mb-1" id="user-username">-</h2>
+            <p class="mb-2 text-muted" id="user-email">-</p>
+            <p class="text-secondary mb-0" id="user-joined">Joined -</p>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <a href="./edit-profile.html" class="btn btn-primary px-4">Update Profile</a>
+              <a href="../" class="btn btn-outline-secondary px-4">Back to Feed</a>
+              <a href="./manage-roles.html" class="btn btn-outline-secondary px-4 d-none" id="manage-roles-btn">Manage Roles</a>
             </div>
-            <div>
-                <h2 class="fw-bold" id="user-username">-</h2>
-                <p id="user-email">-</p>
-                <p>- Posts</p>
-                <p>- Comments</p>
-                <a href="./edit-profile.html">Edit Profile</a>
-            </div>
+          </div>
         </div>
-        <hr>
-    </div>
+      </div>
+
+      <div class="tab-card mt-4">
+        <div class="d-flex flex-wrap align-items-center mb-3">
+          <ul class="nav nav-pills pill-nav gap-2" id="content-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="tab-posts" type="button" role="tab">Posts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tab-comments" type="button" role="tab">Komentar</button>
+            </li>
+          </ul>
+        </div>
+        <div id="content-list" class="d-grid gap-3"></div>
+      </div>
+    </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="../js/auth/profile.js"></script>
+    <script src="../js/auth/profile.js?v=3"></script>
   </body>
 </html>
