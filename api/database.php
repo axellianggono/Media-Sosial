@@ -1,14 +1,14 @@
 <?php
 
-require __DIR__ . '/config.php';
+require 'config.php';
 
-try {
-    $hostname = $env['HOSTNAME'] ?? 'localhost';
-    $username = $env['USERNAME'] ?? 'root';
-    $password = $env['PASSWORD'] ?? '';
-    $dbName   = $env['DB_NAME'] ?? 'socialite';
+$username = $env['USERNAME'];
+$password = $env['PASSWORD'];
+$hostname = $env['HOSTNAME'];
+$database = $env['DB_NAME'];
 
-    $conn = new mysqli($hostname, $username, $password, $dbName);
-} catch (Exception $e) {
-    die("Koneksi ke database gagal: " . $e->getMessage());
+$conn = mysqli_connect($hostname, $username, $password, $database);
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
