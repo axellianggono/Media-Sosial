@@ -21,8 +21,18 @@ function getUserIdFromToken($token) {
     return intval($row['user_id']);
 }
 
+function validateComment($content) {
+    if ($content === null || trim($content) === '') {
+        return "Komentar tidak boleh kosong.";
+    }
+    if (strlen($content) > 100) {
+        return "Komentar maksimal 100 karakter.";
+    }
+    return null;
+}
+
 switch ($_SERVER['REQUEST_METHOD']) {
-    case 'PUT':
+    case 'POST':
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
@@ -30,6 +40,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         $raw = file_get_contents('php://input');
         $data = json_decode($raw, true);
+
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
+
         $tokenParam = $data['token'] ?? null;
 
         if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
@@ -55,51 +70,32 @@ switch ($_SERVER['REQUEST_METHOD']) {
             exit;
         }
 
-        $commentId = intval($data['comment_id'] ?? 0);
+        $postId = intval($data['post_id'] ?? 0);
         $content = trim($data['content'] ?? '');
 
-        if ($commentId <= 0) {
+        if ($postId <= 0) {
             http_response_code(400);
-            echo json_encode(array("success" => false, "message" => "Invalid data."));
+            echo json_encode(array("success" => false, "message" => "Invalid post ID."));
             exit;
         }
-        if ($content === '') {
+
+        $contentError = validateComment($content);
+        if ($contentError !== null) {
             http_response_code(400);
-            echo json_encode(array("success" => false, "message" => "Komentar tidak boleh kosong."));
-            exit;
-        }
-        if (strlen($content) > 100) {
-            http_response_code(400);
-            echo json_encode(array("success" => false, "message" => "Komentar maksimal 100 karakter."));
+            echo json_encode(array("success" => false, "message" => $contentError));
             exit;
         }
 
         global $conn;
-        $stmt = $conn->prepare("SELECT user_id FROM comment WHERE comment_id = ?");
-        $stmt->bind_param("i", $commentId);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        if ($res->num_rows === 0) {
-            http_response_code(404);
-            echo json_encode(array("success" => false, "message" => "Comment not found."));
-            exit;
-        }
-        $row = $res->fetch_assoc();
-        if (intval($row['user_id']) !== $userId) {
-            http_response_code(403);
-            echo json_encode(array("success" => false, "message" => "You do not have permission to update this comment."));
-            exit;
-        }
-
-        $upd = $conn->prepare("UPDATE comment SET content = ? WHERE comment_id = ?");
-        $upd->bind_param("si", $content, $commentId);
-        if (!$upd->execute()) {
+        $stmt = $conn->prepare("INSERT INTO comment (post_id, user_id, content) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $postId, $userId, $content);
+        if (!$stmt->execute()) {
             http_response_code(500);
-            echo json_encode(array("success" => false, "message" => "Failed to update comment."));
+            echo json_encode(array("success" => false, "message" => "Failed to save comment."));
             exit;
         }
 
-        echo json_encode(array("success" => true, "message" => "Comment updated successfully."));
+        echo json_encode(array("success" => true, "message" => "Comment created successfully."));
         break;
 
     default:
