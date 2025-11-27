@@ -8,7 +8,7 @@ require __DIR__ . '/middleware.php';
 function getUserFromToken($token) {
     global $conn, $env;
 
-    $stmt = $conn->prepare("SELECT u.user_id, u.username, u.email, u.role, u.verified_status, u.created_at FROM users u JOIN token t ON u.user_id = t.user_id WHERE t.token = ?");
+    $stmt = $conn->prepare("SELECT u.user_id, u.username, u.email, u.role, u.verified_status, u.created_at, u.profile_picture FROM users u JOIN token t ON u.user_id = t.user_id WHERE t.token = ?");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $result = $stmt->get_result();
