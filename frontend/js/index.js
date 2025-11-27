@@ -117,13 +117,6 @@ function autofillLocation() {
       if (lonInput) lonInput.value = lon;
       form.dataset.lat = lat;
       form.dataset.lon = lon;
-      const rev = await reverseGeocode(lat, lon);
-      if (addressInput) addressInput.value = rev.address;
-      if (cityInput) cityInput.value = rev.city;
-      if (countryInput) countryInput.value = rev.country;
-      form.dataset.address = rev.address;
-      form.dataset.city = rev.city;
-      form.dataset.country = rev.country;
     },
     () => {},
     { enableHighAccuracy: true, timeout: 8000 }
@@ -178,9 +171,6 @@ async function submitPost(event) {
   if (imageInput.files[0]) formData.append('picture', imageInput.files[0]);
   if (form.dataset.lat) formData.append('latitude', form.dataset.lat);
   if (form.dataset.lon) formData.append('longitude', form.dataset.lon);
-  if (form.dataset.address) formData.append('address', form.dataset.address);
-  if (form.dataset.city) formData.append('city', form.dataset.city);
-  if (form.dataset.country) formData.append('country', form.dataset.country);
   formData.append('token', token || '');
 
   postBtn.disabled = true;

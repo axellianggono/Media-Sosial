@@ -92,6 +92,34 @@ function createLocation($lat, $lon, $address, $city, $country) {
     return null;
 }
 
+function reverseGeocode($lat, $lon) {
+    $fallback = ["address" => "", "city" => "", "country" => ""];
+    if ($lat === null || $lon === null) return $fallback;
+
+    $url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={$lat}&lon={$lon}";
+    $opts = [
+        "http" => [
+            "method" => "GET",
+            "header" => "User-Agent: SociaLiteApp/1.0\r\n"
+        ]
+    ];
+    $context = stream_context_create($opts);
+
+    try {
+        $res = @file_get_contents($url, false, $context);
+        if ($res === false) return $fallback;
+        $data = json_decode($res, true);
+        $addr = $data['address'] ?? [];
+        return [
+            "address" => $data['display_name'] ?? "",
+            "city" => $addr['city'] ?? $addr['town'] ?? $addr['village'] ?? $addr['county'] ?? "",
+            "country" => $addr['country'] ?? ""
+        ];
+    } catch (Exception $e) {
+        return $fallback;
+    }
+}
+
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
@@ -126,9 +154,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $lat = isset($_POST['latitude']) ? floatval($_POST['latitude']) : null;
         $lon = isset($_POST['longitude']) ? floatval($_POST['longitude']) : null;
         $image = $_FILES['picture'] ?? null;
-        $address = trim($_POST['address'] ?? '');
-        $city = trim($_POST['city'] ?? '');
-        $country = trim($_POST['country'] ?? '');
 
         $titleError = validateTitle($title);
         if ($titleError !== null) {
@@ -154,7 +179,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
         }
 
-        $locationId = createLocation($lat, $lon, $address, $city, $country);
+        $geo = reverseGeocode($lat, $lon);
+        $locationId = createLocation($lat, $lon, $geo['address'], $geo['city'], $geo['country']);
 
         global $conn;
         $stmt = $conn->prepare("INSERT INTO post (user_id, location_id, picture, title, caption) VALUES (?, ?, ?, ?, ?)");
