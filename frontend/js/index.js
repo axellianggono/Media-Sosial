@@ -50,7 +50,7 @@ function renderPosts(posts) {
     const avatar = p.profile_picture ? normalizeImage(p.profile_picture) : '../api/storage/images/default.jpg';
     const cityCountry = [p.city, p.country].filter(Boolean).join(', ');
     return `
-      <article class="post">
+      <article class="post" onclick="window.location.href='post.html?id=${p.post_id}'" style="cursor:pointer;">
         <div class="post-header">
           <div class="avatar">
             <img src="${avatar}" alt="${p.username || 'User'}">
@@ -198,11 +198,23 @@ document.addEventListener('DOMContentLoaded', () => {
     composerSection.style.display = 'none';
     composerSection.parentElement.insertBefore(postBtnToggle, composerSection);
   }
-  autofillLocation();
+  if (locationCheckbox) {
+    locationCheckbox.addEventListener('change', () => {
+      if (locationCheckbox.checked) {
+        autofillLocation();
+      } else {
+        form.dataset.lat = '';
+        form.dataset.lon = '';
+        if (latInput) latInput.value = '';
+        if (lonInput) lonInput.value = '';
+      }
+    });
+  } else {
+    autofillLocation();
+  }
   handleComposeState();
   titleInput.addEventListener('input', handleComposeState);
   captionInput.addEventListener('input', handleComposeState);
-  autofillLocation();
   if (imageInput) imageInput.addEventListener('click', autofillLocation);
   form.addEventListener('submit', submitPost);
   applyFilterBtn.addEventListener('click', () => { currentPage = 1; loadPosts(); });

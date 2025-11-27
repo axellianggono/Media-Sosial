@@ -66,6 +66,16 @@
       .composer-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
       .row-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
       label { font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+      .location-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        width: fit-content;
+      }
+      .location-label input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
       input, textarea {
         width: 100%; border: 1px solid var(--border); border-radius: 8px;
         padding: 10px 12px; font-family: inherit; font-size: 0.95rem;
@@ -130,8 +140,11 @@
                 <input type="file" id="imageInput" name="picture" accept="image/*">
               </div>
             </div>
-            <div class="form-group">
-              <button type="button" class="btn-apply" id="locationBtn" style="width: fit-content; padding:10px 14px;">Use My Location</button>
+            <div class="form-group" style="align-items:flex-start;">
+              <label for="locationCheckbox" class="location-label">
+                <input type="checkbox" id="locationCheckbox">
+                Use My Location
+              </label>
               <input type="hidden" id="latInput" name="latitude">
               <input type="hidden" id="lonInput" name="longitude">
               <input type="hidden" id="addressInput" name="address">
