@@ -37,10 +37,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
         $query = "
             SELECT p.post_id, p.user_id, p.title, p.caption AS content, p.picture AS image_url,
-                   p.created_at, u.username, u.email,
+                   p.created_at, u.username, u.email, u.profile_picture,
+                   l.city, l.country,
                    COUNT(c.comment_id) AS comment_count
             FROM post p
             JOIN users u ON u.user_id = p.user_id
+            LEFT JOIN location l ON l.location_id = p.location_id
             LEFT JOIN comment c ON c.post_id = p.post_id
             $where
             GROUP BY p.post_id

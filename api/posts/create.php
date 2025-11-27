@@ -79,13 +79,13 @@ function saveImage($image) {
     return $newFileName;
 }
 
-function createLocation($lat, $lon) {
+function createLocation($lat, $lon, $address, $city, $country) {
     if ($lat === null || $lon === null || $lat === '' || $lon === '') {
         return null;
     }
     global $conn;
-    $stmt = $conn->prepare("INSERT INTO location (latitude, longitude) VALUES (?, ?)");
-    $stmt->bind_param("dd", $lat, $lon);
+    $stmt = $conn->prepare("INSERT INTO location (latitude, longitude, address, city, country) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ddsss", $lat, $lon, $address, $city, $country);
     if ($stmt->execute()) {
         return $stmt->insert_id;
     }
@@ -126,6 +126,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
         $lat = isset($_POST['latitude']) ? floatval($_POST['latitude']) : null;
         $lon = isset($_POST['longitude']) ? floatval($_POST['longitude']) : null;
         $image = $_FILES['picture'] ?? null;
+        $address = trim($_POST['address'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        $country = trim($_POST['country'] ?? '');
 
         $titleError = validateTitle($title);
         if ($titleError !== null) {
@@ -151,7 +154,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
         }
 
-        $locationId = createLocation($lat, $lon);
+        $locationId = createLocation($lat, $lon, $address, $city, $country);
 
         global $conn;
         $stmt = $conn->prepare("INSERT INTO post (user_id, location_id, picture, title, caption) VALUES (?, ?, ?, ?, ?)");
