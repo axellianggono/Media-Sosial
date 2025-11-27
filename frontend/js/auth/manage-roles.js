@@ -36,8 +36,8 @@ function renderUsers(users) {
                 <td>${buildRoleBadge(role)}</td>
                 <td class="text-muted">${created}</td>
                 <td class="text-end">
-                    <button class="btn btn-outline-light btn-sm me-1 promote-btn" ${disablePromote ? 'disabled' : ''}>Promote</button>
-                    <button class="btn btn-danger btn-sm demote-btn" ${disableDemote ? 'disabled' : ''}>Demote</button>
+                    ${disablePromote ? '<button class="btn btn-outline-light btn-sm me-1" style="opacity:0.35;cursor:not-allowed;" disabled>Promote</button>' : '<button class="btn btn-success btn-sm me-1 promote-btn" style="background:#28a745; border-color:#28a745; color:#fff;">Promote</button>'}
+                    ${disableDemote ? '<button class="btn btn-danger btn-sm" style="opacity:0.45; background:#f8d7da; border-color:#f5c2c7;cursor:not-allowed;" disabled>Demote</button>' : '<button class="btn btn-danger btn-sm demote-btn" style="background:#dc3545; border-color:#dc3545; color:#fff;">Demote</button>'}
                 </td>
             </tr>
         `;

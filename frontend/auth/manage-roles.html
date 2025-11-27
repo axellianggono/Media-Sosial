@@ -36,6 +36,9 @@
         text-decoration: none;
         cursor: pointer;
       }
+      .btn.small { padding: 8px 12px; }
+      .btn.primary { background: linear-gradient(135deg, #2563eb, #22d3ee); color: #fff; border: none; }
+      .btn.danger { background: #dc3545; color: #fff; border: none; }
       .card {
         background: var(--card); border: 1px solid var(--border); border-radius: 14px;
         box-shadow: 0 14px 36px rgba(0,0,0,0.08); padding: 16px;
@@ -44,13 +47,15 @@
       th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); text-align: left; }
       th { color: var(--muted); font-weight: 600; }
       tr:hover { background: #f1f5f9; }
+      .actions { display: flex; gap: 8px; justify-content: flex-end; }
       .badge {
         display: inline-block; padding: 4px 10px; border-radius: 999px;
-        background: #e5edff; color: #1f3b82; font-size: 12px;
+        font-size: 12px; font-weight: 700;
       }
-      .actions { display: flex; gap: 8px; justify-content: flex-end; }
-      .btn.primary { background: linear-gradient(135deg, #2563eb, #22d3ee); color: #fff; border: none; }
-      .btn.danger { background: #dc3545; color: #fff; border: none; }
+      .bg-warning { background: #fff3cd; color: #856404; }
+      .bg-primary { background: #dbeafe; color: #1d4ed8; }
+      .bg-secondary { background: #e9ecef; color: #495057; }
+      .text-dark { color: #212529; }
     </style>
   </head>
   <body>
@@ -63,7 +68,6 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div>
-            <p style="margin:0; color:var(--muted);">Kelola peran admin/user untuk seluruh akun.</p>
             <h3 style="margin:0;">Promote &amp; Demote</h3>
           </div>
           <button class="btn" id="refresh-btn">Refresh</button>
