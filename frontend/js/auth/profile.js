@@ -78,45 +78,43 @@ function renderPosts(posts) {
 
         return `
             <div class="content-card">
-                <div class="row g-3 align-items-center">
-                    ${imageUrl ? `<div class="col-md-3"><img src="${imageUrl}" alt="${title}"></div>` : ''}
-                    <div class="${imageUrl ? 'col-md-9' : 'col-12'}">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <h6 class="mb-1 text-white">${title}</h6>
-                                <div class="content-meta">Dibuat ${created}</div>
-                            </div>
+                <div style="display:flex; gap:12px; align-items:flex-start;">
+                    ${imageUrl ? `<div><img src="${imageUrl}" alt="${title}"></div>` : ''}
+                    <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                        <div>
+                            <h6 style="margin:0 0 4px;">${title}</h6>
+                            <div class="content-meta">Dibuat ${created}</div>
                         </div>
-                        ${desc ? `<p class="mb-2 content-text">${desc}</p>` : ''}
-                        <div class="action-links d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-secondary btn-sm see-comments-btn" data-post-id="${post.post_id}">See Comments</button>
-                            ${showDelete ? `<button class="btn btn-outline-secondary btn-sm update-post-btn" data-post-id="${post.post_id}">Update</button>` : ''}
-                            ${showDelete ? `<button class="btn btn-danger btn-sm delete-post-btn" data-post-id="${post.post_id}">Delete</button>` : ''}
-                        </div>
-                        <div class="post-comments d-none mt-2" data-comments-for="${post.post_id}"></div>
-                        <div class="post-update d-none mt-2" data-update-for="${post.post_id}">
-                            <form class="update-post-form" data-post-id="${post.post_id}">
-                                <div class="row g-2">
-                                    <div class="col-md-6">
-                                        <label class="form-label mb-1">Title</label>
-                                        <input type="text" class="form-control form-control-sm" name="title" value="${title}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label mb-1">Picture</label>
-                                        <input type="file" class="form-control form-control-sm" name="picture" accept="image/*">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label mb-1">Caption</label>
-                                        <textarea class="form-control form-control-sm" rows="2" name="caption">${desc}</textarea>
-                                    </div>
-                                    <div class="col-12 d-flex gap-2">
-                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                        <button type="button" class="btn btn-outline-secondary btn-sm cancel-update-post" data-post-id="${post.post_id}">Cancel</button>
-                                    </div>
-                                </div>
-                            </form>
+                        ${desc ? `<p class="mb-2 content-text" style="margin:0;">${desc}</p>` : ''}
+                        <div class="actions-right" style="margin-top:12px;">
+                            <button class="btn secondary small see-comments-btn" data-post-id="${post.post_id}">See Comments</button>
+                            ${showDelete ? `<button class="btn secondary small update-post-btn" data-post-id="${post.post_id}">Update</button>` : ''}
+                            ${showDelete ? `<button class="btn danger small delete-post-btn" data-post-id="${post.post_id}">Delete</button>` : ''}
                         </div>
                     </div>
+                </div>
+                <div class="post-comments d-none mt-2" data-comments-for="${post.post_id}"></div>
+                <div class="post-update d-none mt-2" data-update-for="${post.post_id}">
+                    <form class="update-post-form" data-post-id="${post.post_id}">
+                        <div class="inline" style="align-items:flex-end; margin-top:8px;">
+                            <div style="flex:1;">
+                                <label class="content-meta">Title</label>
+                                <input type="text" class="form-control" name="title" value="${title}">
+                            </div>
+                            <div style="flex:1;">
+                                <label class="content-meta">Picture</label>
+                                <input type="file" class="form-control" name="picture" accept="image/*">
+                            </div>
+                        </div>
+                        <div style="margin-top:10px;">
+                            <label class="content-meta">Caption</label>
+                            <textarea class="form-control" rows="2" name="caption">${desc}</textarea>
+                        </div>
+                        <div class="inline" style="margin-top:10px;">
+                            <button type="submit" class="btn primary small">Save</button>
+                            <button type="button" class="btn small cancel-update-post" data-post-id="${post.post_id}">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         `;
@@ -137,15 +135,15 @@ function renderComments(comments) {
         const showDelete = comment.user_id === currentUser?.user_id;
         return `
             <div class="content-card">
-                <div class="d-flex justify-content-between">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
                     <div>
                         <p class="mb-1 content-text" data-comment-text="${comment.comment_id}">${comment.content || ''}</p>
                         <div class="content-meta">Pada ${postLink} • ${created}</div>
                     </div>
-                    <div class="action-links d-flex gap-2 ms-2">
+                    <div class="actions-right" style="margin-top:0;">
                         ${showDelete ? `
-                            <button class="btn btn-outline-secondary btn-sm update-comment-btn" data-comment-id="${comment.comment_id}">Update</button>
-                            <button class="btn btn-danger btn-sm delete-comment-btn" data-comment-id="${comment.comment_id}">Delete</button>
+                            <button class="btn secondary small update-comment-btn" data-comment-id="${comment.comment_id}">Update</button>
+                            <button class="btn danger small delete-comment-btn" data-comment-id="${comment.comment_id}">Delete</button>
                         ` : ''}
                     </div>
                 </div>
