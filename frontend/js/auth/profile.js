@@ -266,7 +266,7 @@ function attachCommentUpdate() {
                     return;
                 }
 
-                const response = await fetch('../../api/comnt/update.php', {
+                const response = await fetch('../../api/coment/update.php', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -308,7 +308,7 @@ async function deletePost(postId) {
 
 async function deleteComment(commentId) {
     if (!confirm('Hapus komentar ini?')) return;
-    const response = await fetch('../../api/comnt/delete.php', {
+    const response = await fetch('../../api/coment/delete.php', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
