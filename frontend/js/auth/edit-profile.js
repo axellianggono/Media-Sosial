@@ -6,7 +6,6 @@ const newPasswordInput = document.getElementById('new-password');
 const editProfileForm = document.getElementById('edit-profile-form');
 const deleteAccountBtn = document.getElementById('delete-account-btn');
 const userEmail = document.getElementById('user-email');
-const userRole = document.getElementById('user-role');
 const token = localStorage.getItem('token');
 
 function ensureAuth() {
@@ -36,7 +35,6 @@ async function loadProfile() {
     previewPhoto.src = user.profile_picture;
     usernameInput.value = user.username || '';
     userEmail.textContent = user.email || '';
-    userRole.textContent = (user.role || 'user').toUpperCase();
 }
 
 async function submitProfile(event) {

@@ -31,7 +31,7 @@ function renderUsers(users) {
 
         return `
             <tr data-user-id="${user.user_id}">
-                <td class="fw-semibold text-dark">${user.username}</td>
+                <td class="text-muted">${user.username}</td>
                 <td class="text-muted">${user.email}</td>
                 <td>${buildRoleBadge(role)}</td>
                 <td class="text-muted">${created}</td>
