@@ -1,3 +1,4 @@
 /vendor/
 .env
 /api/storage/*
+.DS_Store
