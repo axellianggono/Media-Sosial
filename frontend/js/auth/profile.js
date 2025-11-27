@@ -266,13 +266,12 @@ function attachCommentUpdate() {
                     return;
                 }
 
-                const response = await fetch('../../api/auth/updateComment.php', {
+                const response = await fetch('../../api/comnt/update.php', {
                     method: 'PUT',
                     headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: 'Bearer ' + token
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ comment_id: Number(commentId), content: newContent })
+                    body: JSON.stringify({ comment_id: Number(commentId), content: newContent, token })
                 });
                 const result = await response.json().catch(() => ({}));
                 if (!response.ok) {
@@ -290,13 +289,12 @@ function attachCommentUpdate() {
 
 async function deletePost(postId) {
     if (!confirm('Hapus postingan ini?')) return;
-    const response = await fetch('../../api/auth/deletePost.php', {
+    const response = await fetch('../../api/posts/delete.php', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token
         },
-        body: JSON.stringify({ postId: Number(postId) })
+        body: JSON.stringify({ post_id: Number(postId), token })
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -310,13 +308,12 @@ async function deletePost(postId) {
 
 async function deleteComment(commentId) {
     if (!confirm('Hapus komentar ini?')) return;
-    const response = await fetch('../../api/auth/deleteComment.php', {
+    const response = await fetch('../../api/comnt/delete.php', {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token
         },
-        body: JSON.stringify({ comment_id: Number(commentId) })
+        body: JSON.stringify({ comment_id: Number(commentId), token })
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -380,7 +377,7 @@ function attachPostInteractions() {
             formData.append('post_id', postId);
             formData.append('token', token);
 
-            const response = await fetch('../../api/auth/updatePost.php', {
+            const response = await fetch('../../api/posts/update.php', {
                 method: 'POST',
                 headers: {},
                 body: formData
