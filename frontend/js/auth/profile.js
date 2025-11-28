@@ -8,7 +8,6 @@ const manageContentBtn = document.getElementById('manage-content-btn');
 const contentList = document.getElementById('content-list');
 const tabPosts = document.getElementById('tab-posts');
 const tabComments = document.getElementById('tab-comments');
-const postCommentsCache = new Map();
 let isAdmin = false;
 let currentUser;
 let cachedPosts = null;
@@ -87,13 +86,12 @@ function renderPosts(posts) {
                         </div>
                         ${desc ? `<p class="mb-2 content-text" style="margin:0;">${desc}</p>` : ''}
                         <div class="actions-right" style="margin-top:12px;">
-                            <button class="btn secondary small see-comments-btn" data-post-id="${post.post_id}">See Comments</button>
+                            <a class="btn secondary small" href="../post.html?id=${post.post_id}">See Comments</a>
                             ${showDelete ? `<button class="btn secondary small update-post-btn" data-post-id="${post.post_id}">Update</button>` : ''}
                             ${showDelete ? `<button class="btn danger small delete-post-btn" data-post-id="${post.post_id}">Delete</button>` : ''}
                         </div>
                     </div>
                 </div>
-                <div class="post-comments d-none mt-2" data-comments-for="${post.post_id}"></div>
                 <div class="post-update d-none mt-2" data-update-for="${post.post_id}">
                     <form class="update-post-form" data-post-id="${post.post_id}">
                         <div class="inline" style="align-items:flex-end; margin-top:8px;">
@@ -324,19 +322,6 @@ async function deleteComment(commentId) {
 }
 
 function attachPostInteractions() {
-    const buttons = document.querySelectorAll('.see-comments-btn');
-    buttons.forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const postId = btn.dataset.postId;
-            const row = document.querySelector(`[data-comments-row="${postId}"]`);
-            const container = document.querySelector(`[data-comments-for="${postId}"]`);
-            if (!container) return;
-            if (row) row.classList.remove('d-none');
-            await togglePostComments(postId, container);
-        });
-    });
-
     document.querySelectorAll('.delete-post-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -392,49 +377,6 @@ function attachPostInteractions() {
             await loadPosts();
         });
     });
-}
-
-async function togglePostComments(postId, container) {
-    if (container.dataset.loaded === 'true') {
-        container.classList.toggle('d-none');
-        return;
-    }
-
-    container.classList.remove('d-none');
-    container.innerHTML = '<div class="text-muted">Memuat komentar...</div>';
-
-    if (postCommentsCache.has(postId)) {
-        renderPostComments(container, postCommentsCache.get(postId));
-        container.dataset.loaded = 'true';
-        return;
-    }
-
-    const response = await fetch(`../../api/auth/getAllPostComments.php?post_id=${postId}`, {
-        headers: { Authorization: 'Bearer ' + token }
-    });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) {
-        container.innerHTML = `<div class="text-danger">${result.message || 'Gagal memuat komentar.'}</div>`;
-        return;
-    }
-
-    postCommentsCache.set(postId, result.data || []);
-    container.dataset.loaded = 'true';
-    renderPostComments(container, result.data || []);
-}
-
-function renderPostComments(container, comments) {
-    if (!comments.length) {
-        container.innerHTML = '<div class="text-muted">Belum ada komentar.</div>';
-        return;
-    }
-
-    container.innerHTML = comments.map(c => {
-        const created = c.created_at ? new Date(c.created_at).toLocaleString() : '-';
-        return `
-            <div class="content-meta mb-1">• ${c.content || ''} <span class="text-secondary">(${created})</span></div>
-        `;
-    }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', fetchUserProfile);
