@@ -4,28 +4,73 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Verify Account</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
+      :root {
+        --bg: #f7f9fc;
+        --card: #ffffff;
+        --border: #d9e0ea;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #2563eb;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Inter", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+        width: min(430px, 96vw);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+      }
+      h1 { margin: 0 0 6px; }
+      p { margin: 0 0 16px; color: var(--muted); }
+      .field { margin-bottom: 12px; }
+      label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--muted); }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #f9fbff;
+        color: var(--text);
+      }
+      input:focus { outline: 1px solid var(--accent); }
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #2563eb, #22d3ee);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn:hover { filter: brightness(1.05); }
     </style>
   </head>
   <body>
-    <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-       <div>
-            <h1 class="fw-bold">Welcome To SociaLite</h1>
-            <p class="mb-4">Activate your account</p>
-            <form action="../../api/auth/verify.php" method="POST" id="verification-form">
-                <div class="mb-3">
-                    <label for="verification-code" class="form-label">Verification Code</label>
-                    <input type="text" class="form-control" id="verification-code" name="verification-code" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Activate Account</button>
-            </form>
-        </div> 
+    <div class="panel">
+        <h1>Welcome To SociaLite</h1>
+        <p>Activate your account</p>
+        <form action="../../api/auth/verify.php" method="POST" id="verification-form">
+            <div class="field">
+                <label for="verification-code">Verification Code</label>
+                <input type="text" id="verification-code" name="verification-code" required>
+            </div>
+            <button type="submit" class="btn">Activate Account</button>
+        </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="../js/auth/verify.js"></script>
   </body>
 </html>

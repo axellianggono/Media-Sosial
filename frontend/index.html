@@ -1,38 +1,181 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Profile</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-      crossorigin="anonymous"
-    />
+    <title>SociaLite</title>
     <style>
+      :root {
+        --bg: #f7f9fc;
+        --card: #ffffff;
+        --border: #d9e0ea;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #2563eb;
+        --accent-hover: #1d4ed8;
+      }
+      * { box-sizing: border-box; }
       body {
-        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        overflow-y: scroll;
+      }
+      .shell { max-width: 1200px; margin: 0 auto; padding: 24px 18px; }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
+        border-radius: 12px; box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+        position: sticky; top: 20px; z-index: 100;
+      }
+      .brand { font-weight: 800; letter-spacing: 0.4px; font-size: 1.25rem; }
+      .links { display: flex; gap: 10px; align-items: center; }
+      .link {
+        color: var(--text); text-decoration: none; padding: 8px 12px;
+        border: 1px solid var(--border); border-radius: 10px;
+        background: #eef2f7; transition: background .15s ease;
+        font-weight: 600; font-size: 0.9rem;
+      }
+      .link:hover { background: #e1e7ef; }
+      .link-logout { color: #dc2626; background: #fef2f2; border-color: #fecaca; }
+      .link-logout:hover { background: #fee2e2; }
+      .toggle-compose {
+        display: inline-block;
+        margin: 12px 0;
+        padding: 10px 14px;
+        background: #eef2f7;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .toggle-compose:hover { background: #e1e7ef; }
+      .feed-container { max-width: 800px; margin: 30px auto 0; }
+      .composer {
+        background: var(--card); border: 1px solid var(--border);
+        border-radius: 12px; padding: 16px; margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; gap: 16px;
+      }
+      .avatar {
+        width: 48px; height: 48px; border-radius: 10px;
+        background-color: #e5e7eb; flex-shrink: 0; overflow: hidden;
+      }
+      .avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .composer-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+      .row-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+      label { font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+      .location-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+        color: var(--text);
+        cursor: pointer;
+        width: fit-content;
+      }
+      .location-label input[type="checkbox"] { width: 16px; height: 16px; margin: 0; }
+      input, textarea {
+        width: 100%; border: 1px solid var(--border); border-radius: 8px;
+        padding: 10px 12px; font-family: inherit; font-size: 0.95rem;
+        background: #fff; color: var(--text);
+      }
+      input:focus, textarea:focus { outline: 1px solid var(--accent); }
+      .composer-footer {
+        display: flex; justify-content: flex-end; gap: 10px;
+      }
+      .btn-post {
+        background: var(--accent); color: white; border: none; padding: 10px 18px;
+        border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+        opacity: 0.6; pointer-events: none;
+      }
+      .btn-post.active { opacity: 1; pointer-events: auto; }
+      .btn-post.active:hover { background: var(--accent-hover); }
+      .post {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 20px; margin-bottom: 16px; transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .post:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.06); }
+      .post-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+      .user-info { display: flex; flex-direction: column; gap: 2px; }
+      .username { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+      .handle { font-size: 0.85rem; color: var(--muted); }
+      .location { font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+      .post-text { font-size: 1rem; line-height: 1.6; color: var(--text); white-space: pre-wrap; margin-bottom: 16px; }
+      .post-image { width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 10px; }
+      .post-actions { display: flex; gap: 16px; color: var(--muted); font-size: 0.9rem; font-weight: 500; }
+      .action-item { cursor: pointer; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+      .action-item:hover { color: var(--accent); }
+      .filter-bar { display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+      .select, .filter-input {
+        padding: 8px 10px; border:1px solid var(--border); border-radius:8px; background:#fff; color:var(--text); font-size:0.95rem;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-md">
-        <a class="navbar-brand" href="#">SociaLite</a>
-      </div>
-    </nav>
-    <div class="container">
-      <div class="d-flex justify-content-end mt-3 gap-3">
-        <a href="./auth/profile.html">My Account</a>
-        <a href="./auth/login.html">Logout</a>
-      </div>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">SociaLite</div>
+        <div class="links">
+          <a class="link" href="./auth/profile.html">My Account</a>
+          <a class="link link-logout" href="./auth/login.html">Logout</a>
+        </div>
+      </header>
+
+      <!-- Feed Content (Integrated) -->
+      <main class="feed-container">
+        <div class="composer" id="composer-section" style="display:none;">
+          <div class="avatar">
+             <img src="https://ui-avatars.com/api/?name=Me&background=2563eb&color=fff" alt="Me">
+          </div>
+          <form class="composer-body" id="composer-form">
+            <div class="row-2">
+              <div>
+                <label for="titleInput">Title</label>
+                <input type="text" id="titleInput" name="title" placeholder="Post title (required, max 100)">
+              </div>
+              <div>
+                <label for="imageInput">Picture (optional)</label>
+                <input type="file" id="imageInput" name="picture" accept="image/*">
+              </div>
+            </div>
+            <div class="form-group" style="align-items:flex-start;">
+              <label for="locationCheckbox" class="location-label">
+                <input type="checkbox" id="locationCheckbox">
+                Use My Location
+              </label>
+              <input type="hidden" id="latInput" name="latitude">
+              <input type="hidden" id="lonInput" name="longitude">
+              <input type="hidden" id="addressInput" name="address">
+              <input type="hidden" id="cityInput" name="city">
+              <input type="hidden" id="countryInput" name="country">
+            </div>
+            <div>
+              <label for="captionInput">Caption</label>
+              <textarea id="captionInput" name="caption" rows="3" placeholder="Share something..."></textarea>
+            </div>
+            <div class="composer-footer">
+              <button type="submit" class="btn-post" id="postBtn">Post</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="filter-bar">
+          <label for="sortSelect" style="color:var(--muted); font-weight:600;">Sort</label>
+          <select id="sortSelect" class="select">
+            <option value="latest">Terbaru</option>
+            <option value="comments">Jumlah komentar</option>
+          </select>
+          <input type="email" id="emailFilter" class="filter-input" placeholder="Filter by email (optional)">
+          <button class="btn" id="applyFilter">Apply</button>
+        </div>
+
+        <div id="feedStream"></div>
+        <div id="pagination" style="display:flex; gap:8px; justify-content:center; margin-top:12px;"></div>
+      </main>
     </div>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-      crossorigin="anonymous"
-    ></script>
+
     <script src="js/index.js"></script>
   </body>
 </html>

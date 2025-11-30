@@ -1,0 +1,201 @@
+<?php
+
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../config.php';
+require __DIR__ . '/../database.php';
+require __DIR__ . '/../auth/middleware.php';
+
+use Ramsey\Uuid\Uuid;
+
+function getUserIdFromToken($token) {
+    global $conn;
+
+    $stmt = $conn->prepare("SELECT user_id FROM token WHERE token = ?");
+    $stmt->bind_param("s", $token);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        return null;
+    }
+    $row = $result->fetch_assoc();
+    return intval($row['user_id']);
+}
+
+function validateTitle($title) {
+    if ($title === '' || $title === null) {
+        return "Title is required.";
+    }
+    if (strlen($title) > 100) {
+        return "Title must be at most 100 characters.";
+    }
+    return null;
+}
+
+function validateImage($image) {
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (empty($image['name']) || $image['error'] === UPLOAD_ERR_NO_FILE || empty($image['tmp_name']) || $image['size'] === 0) {
+        return "NO_FILE";
+    }
+    if ($image['error'] !== UPLOAD_ERR_OK) {
+        return "Error uploading image.";
+    }
+    if (!in_array($image['type'], $allowedTypes)) {
+        return "Invalid image type. Only JPG, PNG, and GIF are allowed.";
+    }
+    if ($image['size'] > 2 * 1024 * 1024) {
+        return "Image size must be less than 2MB.";
+    }
+    return null;
+}
+
+function saveImage($image) {
+    $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
+    $name = Uuid::uuid4()->toString();
+    $newFileName = $name . '.' . $extension;
+    $uploadDir = __DIR__ . '/../storage/images/';
+    if (!is_dir($uploadDir)) {
+        if (!mkdir($uploadDir, 0777, true)) {
+            return null;
+        }
+    }
+    if (!is_writable($uploadDir)) {
+        @chmod($uploadDir, 0777);
+        if (!is_writable($uploadDir)) {
+            return null;
+        }
+    }
+    $uploadPath = $uploadDir . $newFileName;
+
+    if (!move_uploaded_file($image['tmp_name'], $uploadPath)) {
+        $data = @file_get_contents($image['tmp_name']);
+        if ($data === false) {
+            return null;
+        }
+        if (@file_put_contents($uploadPath, $data) === false) {
+            return null;
+        }
+    }
+
+    return $newFileName;
+}
+
+function createLocation($lat, $lon, $address, $city, $country) {
+    if ($lat === null || $lon === null || $lat === '' || $lon === '') {
+        return null;
+    }
+    global $conn;
+    $stmt = $conn->prepare("INSERT INTO location (latitude, longitude, address, city, country) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ddsss", $lat, $lon, $address, $city, $country);
+    if ($stmt->execute()) {
+        return $stmt->insert_id;
+    }
+    return null;
+}
+
+function reverseGeocode($lat, $lon) {
+    $fallback = ["address" => "", "city" => "", "country" => ""];
+    if ($lat === null || $lon === null) return $fallback;
+
+    $url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={$lat}&lon={$lon}";
+    $opts = [
+        "http" => [
+            "method" => "GET",
+            "header" => "User-Agent: SociaLiteApp/1.0\r\n"
+        ]
+    ];
+    $context = stream_context_create($opts);
+
+    try {
+        $res = @file_get_contents($url, false, $context);
+        if ($res === false) return $fallback;
+        $data = json_decode($res, true);
+        $addr = $data['address'] ?? [];
+        return [
+            "address" => $data['display_name'] ?? "",
+            "city" => $addr['city'] ?? $addr['town'] ?? $addr['village'] ?? $addr['county'] ?? "",
+            "country" => $addr['country'] ?? ""
+        ];
+    } catch (Exception $e) {
+        return $fallback;
+    }
+}
+
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'POST':
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (!$authHeader && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+        if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            $token = $matches[1];
+        } elseif (!empty($_POST['token'])) {
+            $token = $_POST['token'];
+        } else {
+            http_response_code(400);
+            echo json_encode(array("success" => false, "message" => "Authorization header not found."));
+            exit;
+        }
+
+        if (!validateToken($token)) {
+            http_response_code(401);
+            echo json_encode(array("success" => false, "message" => "Invalid token."));
+            exit;
+        }
+
+        $userId = getUserIdFromToken($token);
+        if (!$userId) {
+            http_response_code(401);
+            echo json_encode(array("success" => false, "message" => "Invalid token."));
+            exit;
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $caption = trim($_POST['caption'] ?? '');
+        $lat = isset($_POST['latitude']) ? floatval($_POST['latitude']) : null;
+        $lon = isset($_POST['longitude']) ? floatval($_POST['longitude']) : null;
+        $image = $_FILES['picture'] ?? null;
+
+        $titleError = validateTitle($title);
+        if ($titleError !== null) {
+            http_response_code(400);
+            echo json_encode(array("success" => false, "message" => $titleError));
+            exit;
+        }
+
+        $imageError = $image ? validateImage($image) : "NO_FILE";
+        if ($imageError !== null && $imageError !== "NO_FILE") {
+            http_response_code(400);
+            echo json_encode(array("success" => false, "message" => $imageError));
+            exit;
+        }
+
+        $savedImage = null;
+        if ($imageError !== "NO_FILE") {
+            $savedImage = saveImage($image);
+            if (!$savedImage) {
+                http_response_code(500);
+                echo json_encode(array("success" => false, "message" => "Failed to save image."));
+                exit;
+            }
+        }
+
+        $geo = reverseGeocode($lat, $lon);
+        $locationId = createLocation($lat, $lon, $geo['address'], $geo['city'], $geo['country']);
+
+        global $conn;
+        $stmt = $conn->prepare("INSERT INTO post (user_id, location_id, picture, title, caption) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisss", $userId, $locationId, $savedImage, $title, $caption);
+        if (!$stmt->execute()) {
+            http_response_code(500);
+            echo json_encode(array("success" => false, "message" => "Failed to save post."));
+            exit;
+        }
+
+        echo json_encode(array("success" => true, "message" => "Post created successfully."));
+        break;
+
+    default:
+        http_response_code(405);
+        echo json_encode(array("success" => false, "message" => "Method not allowed."));
+        break;
+}

@@ -4,122 +4,127 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <style>
+      :root {
+        --bg: #f8f9fa;
+        --card: #ffffff;
+        --border: #dee2e6;
+        --text: #212529;
+        --muted: #6c757d;
+        --accent: #0d6efd;
+        --accent2: #22d3ee;
+      }
+      * { box-sizing: border-box; }
       body {
-        font-family: Arial, Helvetica, sans-serif;
-        background: #f8f9fa;
-        color: #212529;
-        min-height: 100vh;
+        margin: 0;
+        font-family: "Inter", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
       }
-      .navbar {
-        background: #ffffff;
-        border-bottom: 1px solid #e9ecef;
+      .shell { max-width: 1100px; margin: 0 auto; padding: 22px 18px 40px; }
+      .topbar {
+        display: flex; justify-content: space-between; align-items: center;
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 12px 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); margin-bottom: 16px;
       }
-      .profile-card {
-        background: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      .btn {
+        border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px;
+        background: #e9ecef; color: var(--text); font-weight: 600; text-decoration: none; cursor: pointer;
+        transition: background .15s ease;
+      }
+      .btn:hover { background: #dde1e5; }
+      .btn.primary { background: var(--accent); color: #fff; border: none; }
+      .btn.danger { background: #dc3545; color: #fff; border: none; }
+      .btn.secondary { background: #e9ecef; color: var(--text); }
+      .btn.small { padding: 6px 10px; font-size: 13px; }
+      .card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.06); padding: 18px;
+      }
+      .profile-header {
+        display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center;
       }
       .avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #f1f3f5;
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+        border: 4px solid #e9ecef;
       }
-      .tab-card {
-        background: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 16px;
-        padding: 16px;
-        min-height: 260px;
+      .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+      .tabs {
+        display: inline-flex; gap: 8px; padding: 6px; background: #e9ecef; border-radius: 10px; margin-bottom: 12px;
       }
-      .pill-nav .nav-link {
-        border-radius: 12px;
-        color: #495057;
-        border: 1px solid transparent;
-      }
-      .pill-nav .nav-link.active {
-        background: #e7f1ff;
-        border-color: #cfe2ff;
-        color: #0d6efd;
-      }
+      .tab-btn { border: 1px solid transparent; background: transparent; padding: 9px 12px; border-radius: 8px; cursor: pointer; color: var(--muted); font-weight: 700; }
+      .tab-btn.active { background: #dbeafe; color: #0d6efd; border-color: #bcd2fb; }
+      .content-list { display: grid; gap: 12px; }
       .content-card {
-        border: 1px solid #e9ecef;
-        border-radius: 12px;
-        padding: 14px;
-        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
       }
       .content-card img {
-        max-height: 160px;
+        width: 180px;
+        height: 120px;
         object-fit: cover;
-        border-radius: 12px;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      }
+      .content-meta { font-size: 13px; color: var(--muted); }
+      .content-text { color: var(--text); }
+      .inline { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+      .d-none { display: none !important; }
+      .actions-right { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+      .form-control {
         width: 100%;
-      }
-      .content-meta {
-        font-size: 13px;
-        color: #6c757d;
-      }
-      .content-text {
-        color: #343a40;
-      }
-      .action-links .btn {
-        padding: 6px 10px;
-        font-size: 12px;
+        background: #fff;
+        border: 1px solid var(--border);
         border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .form-control:focus { outline: 1px solid var(--accent); }
+      .update-block { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+      @media (max-width: 720px) {
+        .profile-header { grid-template-columns: 1fr; text-align: center; }
+        .actions { justify-content: center; }
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg">
-      <div class="container-xl py-2">
-        <a class="navbar-brand fw-bold text-dark" href="../">SociaLite</a>
-        <div class="d-flex align-items-center gap-3 ms-auto">
-          <a href="../" class="btn btn-outline-secondary btn-sm px-3">Home</a>
-          <a href="./edit-profile.html" class="btn btn-primary btn-sm px-3">Edit Profile</a>
+    <div class="shell">
+      <div class="topbar">
+        <div style="font-weight:800;">SociaLite</div>
+        <div class="actions">
+          <a href="../" class="btn">Home</a>
+          <a href="./edit-profile.html" class="btn primary">Edit Profile</a>
         </div>
       </div>
-    </nav>
 
-    <main class="container-xl py-5">
-      <div class="profile-card">
-        <div class="row align-items-center g-4">
-          <div class="col-md-auto text-center text-md-start">
-            <img src="../../api/storage/images/default.jpg" alt="User's Profile Picture" class="avatar" id="user-profile-photo">
-          </div>
-          <div class="col">
-            <h2 class="fw-bold text-dark mb-1" id="user-username">-</h2>
-            <p class="mb-2 text-muted" id="user-email">-</p>
-            <p class="text-secondary mb-0" id="user-joined">Joined -</p>
-            <div class="d-flex flex-wrap gap-2 mt-3">
-              <a href="./edit-profile.html" class="btn btn-primary px-4">Update Profile</a>
-              <a href="../" class="btn btn-outline-secondary px-4">Back to Feed</a>
-              <a href="./manage-roles.html" class="btn btn-outline-secondary px-4 d-none" id="manage-roles-btn">Manage Roles</a>
-              <a href="./manage-content.html" class="btn btn-outline-secondary px-4 d-none" id="manage-content-btn">Manage Content</a>
+      <div class="card">
+        <div class="profile-header">
+          <img src="../../api/storage/images/default.jpg" alt="User's Profile Picture" class="avatar" id="user-profile-photo">
+          <div>
+            <h2 style="margin:0 0 6px;" id="user-username">-</h2>
+            <p style="margin:0 0 4px; color:var(--muted);" id="user-email">-</p>
+            <p class="content-meta" id="user-joined">Joined -</p>
+            <div class="actions">
+              <a href="./edit-profile.html" class="btn primary">Update Profile</a>
+              <a href="../" class="btn">Back to Feed</a>
+              <a href="./manage-roles.html" class="btn d-none" id="manage-roles-btn">Manage Roles</a>
+              <a href="./manage-content.html" class="btn d-none" id="manage-content-btn">Manage Content</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="tab-card mt-4">
-        <div class="d-flex flex-wrap align-items-center mb-3">
-          <ul class="nav nav-pills pill-nav gap-2" id="content-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="tab-posts" type="button" role="tab">Posts</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="tab-comments" type="button" role="tab">Komentar</button>
-            </li>
-          </ul>
+      <div class="card" style="margin-top:14px;">
+        <div class="tabs" id="content-tabs">
+          <button class="tab-btn active" id="tab-posts" type="button">Posts</button>
+          <button class="tab-btn" id="tab-comments" type="button">Komentar</button>
         </div>
-        <div id="content-list" class="d-grid gap-3"></div>
+        <div id="content-list" class="content-list"></div>
       </div>
-    </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="../js/auth/profile.js?v=3"></script>
+    </div>
+
+    <script src="../js/auth/profile.js?v=4"></script>
   </body>
 </html>
