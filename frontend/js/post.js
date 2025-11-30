@@ -133,7 +133,10 @@ function renderComments(comments) {
                 return;
         }
 
-        commentsList.innerHTML = comments.map(c => {
+        // Show newest comments first
+        const sorted = [...comments].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+        commentsList.innerHTML = sorted.map(c => {
                 const created = c.created_at ? new Date(c.created_at).toLocaleString() : '';
                 const avatar = c.profile_picture ? normalizeImage(c.profile_picture) : '../api/storage/images/default.jpg';
 
@@ -160,4 +163,3 @@ document.addEventListener('DOMContentLoaded', () => {
                 commentForm.addEventListener('submit', submitComment);
         }
 });
-
