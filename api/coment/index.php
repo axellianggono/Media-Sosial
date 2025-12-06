@@ -19,7 +19,7 @@ if ($postId <= 0) {
 }
 
 $query = "
-    SELECT c.comment_id, c.content, c.created_at,
+    SELECT c.comment_id, c.content, c.created_at, c.user_id,
            u.username, u.profile_picture
     FROM comment c
     JOIN users u ON u.user_id = c.user_id

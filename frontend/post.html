@@ -73,6 +73,17 @@
       .comment-user { font-weight: 700; font-size: 0.9rem; }
       .comment-date { font-size: 0.75rem; color: var(--muted); }
       .comment-text { font-size: 0.95rem; line-height: 1.4; }
+      .comment-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+      .action-btn {
+        background: #e5e7eb; border: 1px solid var(--border); border-radius: 8px;
+        padding: 6px 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
+      }
+      .action-btn:hover { background: #d9dde3; }
+      .action-btn.danger { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+      .edit-input {
+        width: 100%; border: 1px solid var(--border); border-radius: 8px;
+        padding: 8px 10px; font-family: inherit; font-size: 0.95rem; margin-top: 8px; resize: vertical;
+      }
       
       .back-btn {
         display: inline-flex; align-items: center; gap: 6px;
